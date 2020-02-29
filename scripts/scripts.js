@@ -42,7 +42,11 @@ function initMap() {
             (response) => {
                 fillPageByUserInfo(response['data'].user);
                 fetch(`${serverUrl}/events/get-list`,{
-                    cache: 'no-cache'
+                    cache: 'no-cache',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `JWT ${getCookie('access_token')}`
+                    }
                 })
                     .then(response => response.json())
                     .then(response => {
@@ -89,4 +93,11 @@ function  fillPageByUserInfo(user) {
 
 function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
+}
+
+function getCookie(name) {
+    let matches = document.cookie.match(new RegExp(
+        "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+    ));
+    return matches ? decodeURIComponent(matches[1]) : null;
 }
