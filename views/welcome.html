@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Yuhy</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/welcome.css">
+    <script src="https://kit.fontawesome.com/f64cdc1941.js"></script>
+</head>
+<body>
+<div class="wrapper">
+    <div class="title">
+        <h3 class="text-title"><i class="fas fa-map-marked-alt"></i> YUHY <span class="you-logged-as"></span></h3>
+        <button type="button" class="btn btn-danger">Logout</button>
+    </div>
+    <div class="main-content">
+        <div id="map"></div>
+        <div class="event-box">
+            <button type="button" class="btn btn-dark add-event-button"><i class="fas fa-plus"></i></button>
+        </div>
+    </div>
+</div>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAG1sq_AYOUvJK2SF8cG4xNG-qP_Y_WPqw&callback=initMap">
+</script>
+<script src="../scripts/scripts.js"></script>
+</body>
+</html>
