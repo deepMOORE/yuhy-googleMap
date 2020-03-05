@@ -1,8 +1,16 @@
 let serverUrl = `http://127.0.0.1:8000`;
+let accessToken = getCookie('access_token');
+let userId = (new URL(window.location.href)).searchParams.get('id');
+
+document.querySelector('body > div > div.title > button')
+    .addEventListener('click', function (event) {
+        event.preventDefault();
+
+        location.href = 'http://localhost:3000';
+    });
 
 function initMap() {
-    var uluru = {lat: 54.1973332, lng: 45.1052696};
-    var map = new google.maps.Map(document.getElementById('map'), {
+    const map = new google.maps.Map(document.getElementById('map'), {
         zoom: 4,
         center: {
             lat: 54.1973332,
@@ -19,6 +27,7 @@ function initMap() {
             credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `JWT ${accessToken}`
             },
             body: JSON.stringify({
                 name: 'MockName',
@@ -28,14 +37,17 @@ function initMap() {
                 longitude: getRandomInt(100),
             }),
         })
-            .then(response => response.json())
-            .then(data => console.info(data))
+            .then(
+                () => location.reload()
+            );
     });
 
-    let url = new URL(window.location.href);
-    let userId = url.searchParams.get('id');
     fetch(`${serverUrl}/user/get-by-id/${userId}`, {
         cache: 'no-cache',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `JWT ${accessToken}`
+        }
     })
         .then((response) => response.json())
         .then(
@@ -45,7 +57,7 @@ function initMap() {
                     cache: 'no-cache',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `JWT ${getCookie('access_token')}`
+                        'Authorization': `JWT ${accessToken}`
                     }
                 })
                     .then(response => response.json())
@@ -62,6 +74,15 @@ function fillEventsList(events, map) {
         const marker = new google.maps.Marker({
             position: {lat: (parseFloat(x.latitude)), lng: (parseFloat(x.longitude))},
             map: map,
+        });
+
+        let contentString = '<div id="content">HEllo Eptel!</div>';
+        let infoWindow = new google.maps.InfoWindow({
+            content: contentString
+        });
+
+        marker.addListener('click', function() {
+            infoWindow.open(map, marker);
         });
 
         let eventNode = document.createElement('div');
@@ -81,7 +102,22 @@ function fillEventsList(events, map) {
 function setListeners() {
     document.querySelectorAll('.take-part').forEach(function (x) {
         x.addEventListener('click', function (event) {
-            // console.log(event.target);
+            let eventId = x.dataset.id;
+
+            fetch(`${serverUrl}/events/register-user/`, {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `JWT ${accessToken}`
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    event_id: eventId
+                })
+            })
+                .then(response => response.json());
+
             event.preventDefault();
         });
     });

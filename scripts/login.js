@@ -20,7 +20,7 @@ loginButton.addEventListener('click', function (event) {
     postLogin(email, password)
         .then(function (data) {
             if (data['status'] === 'success') {
-                document.cookie = data['data']['token'];
+                document.cookie = 'access_token=' + data['data']['token'];
                 location.href = 'views/welcome.html?id=' + data['data']['user_id'];
             } else {
                 failWindow.style.display = 'block';
