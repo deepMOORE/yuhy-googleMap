@@ -38,8 +38,8 @@ function initMap() {
             }),
         })
             .then(
-                () => location.reload()
-            );
+                (response) => response.json()
+            ).then(response => console.log(response));
     });
 
     fetch(`${serverUrl}/user/get-by-id/${userId}`, {
@@ -53,7 +53,7 @@ function initMap() {
         .then(
             (response) => {
                 fillPageByUserInfo(response['data'].user);
-                fetch(`${serverUrl}/events/get-list`,{
+                fetch(`${serverUrl}/events/get/`,{
                     cache: 'no-cache',
                     headers: {
                         'Content-Type': 'application/json',
@@ -70,33 +70,52 @@ function initMap() {
 
 function fillEventsList(events, map) {
     let eventsBox = document.querySelector('.event-box');
-    events.forEach(x => {
-        const marker = new google.maps.Marker({
-            position: {lat: (parseFloat(x.latitude)), lng: (parseFloat(x.longitude))},
-            map: map,
-        });
+    fetch(`${serverUrl}/events/get-list`, {
+        cache: 'no-cache',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `JWT ${accessToken}`
+        }
+    })
+        .then((response) => response.json())
+        .then(
+            (response) => {
+                events.forEach(x => {
+                    const marker = new google.maps.Marker({
+                        position: {lat: (parseFloat(x.latitude)), lng: (parseFloat(x.longitude))},
+                        map: map,
+                    });
 
-        let contentString = '<div id="content">HEllo Eptel!</div>';
-        let infoWindow = new google.maps.InfoWindow({
-            content: contentString
-        });
+                    let eventId = x.id;
+                    let usernames = response['data'].map(function (x) {
+                        if (x.event_id === eventId) {
+                            return x.username;
+                        }
+                    });
 
-        marker.addListener('click', function() {
-            infoWindow.open(map, marker);
-        });
+                    let contentString = `<div id="content">${usernames.toString()}</div>`;
+                    let infoWindow = new google.maps.InfoWindow({
+                        content: contentString
+                    });
 
-        let eventNode = document.createElement('div');
-        eventNode.className = 'event';
-        eventNode.innerHTML = `<div class="event-info-bar">
+                    marker.addListener('click', function() {
+                        infoWindow.open(map, marker);
+                    });
+
+                    let eventNode = document.createElement('div');
+                    eventNode.className = 'event';
+                    eventNode.innerHTML = `<div class="event-info-bar">
                     <h3 class="event-title">${x.name}</h3>
                     <span class="event-description">${x.description}</span>
                 </div>
                 <button class="btn btn-danger take-part" data-id='${x.id}'>Take part!</button>`;
 
-        eventsBox.appendChild(eventNode);
-    });
+                    eventsBox.appendChild(eventNode);
+                });
 
-    setTimeout(setListeners, 2000);
+                setTimeout(setListeners, 2000);
+            }
+        );
 }
 
 function setListeners() {
@@ -116,7 +135,8 @@ function setListeners() {
                     event_id: eventId
                 })
             })
-                .then(response => response.json());
+                .then(response => response.json())
+                .then(response => console.log(response));
 
             event.preventDefault();
         });
