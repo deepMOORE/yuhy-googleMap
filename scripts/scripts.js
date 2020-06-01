@@ -38,8 +38,8 @@ function initMap() {
             }),
         })
             .then(
-                (response) => response.json()
-            ).then(response => console.log(response));
+                () => location.reload()
+            );
     });
 
     fetch(`${serverUrl}/user/get-by-id/${userId}`, {
@@ -53,7 +53,7 @@ function initMap() {
         .then(
             (response) => {
                 fillPageByUserInfo(response['data'].user);
-                fetch(`${serverUrl}/events/get/`,{
+                fetch(`${serverUrl}/events/get-list`,{
                     cache: 'no-cache',
                     headers: {
                         'Content-Type': 'application/json',
@@ -70,52 +70,53 @@ function initMap() {
 
 function fillEventsList(events, map) {
     let eventsBox = document.querySelector('.event-box');
-    fetch(`${serverUrl}/events/get-list`, {
-        cache: 'no-cache',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `JWT ${accessToken}`
-        }
-    })
-        .then((response) => response.json())
-        .then(
-            (response) => {
-                events.forEach(x => {
-                    const marker = new google.maps.Marker({
-                        position: {lat: (parseFloat(x.latitude)), lng: (parseFloat(x.longitude))},
-                        map: map,
-                    });
+    events.forEach(x => {
+        const marker = new google.maps.Marker({
+            position: {lat: (parseFloat(x[2])), lng: (parseFloat(x[3]))},
+            map: map,
+        });
 
-                    let eventId = x.id;
-                    let usernames = response['data'].map(function (x) {
-                        if (x.event_id === eventId) {
-                            return x.username;
-                        }
-                    });
+        marker.addListener('click', function() {
+            fetch(`${serverUrl}/users/get-users-by-event-id/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `JWT ${accessToken}`
+                },
+                body: JSON.stringify({
+                    id: x[0],
+                })
+            })
+                .then(response => response.json())
+                .then(response => {
+                    let names = response.data.map(x => {
 
-                    let contentString = `<div id="content">${usernames.toString()}</div>`;
+                    });
+                    let contentString = `<div id="content">
+                                           ${x[1]}
+                                           <hr>
+                                           ${(response.data.length === 0)? "No users yet.":response.data}
+                                         </div>`;
                     let infoWindow = new google.maps.InfoWindow({
                         content: contentString
                     });
 
-                    marker.addListener('click', function() {
-                        infoWindow.open(map, marker);
-                    });
-
-                    let eventNode = document.createElement('div');
-                    eventNode.className = 'event';
-                    eventNode.innerHTML = `<div class="event-info-bar">
-                    <h3 class="event-title">${x.name}</h3>
-                    <span class="event-description">${x.description}</span>
-                </div>
-                <button class="btn btn-danger take-part" data-id='${x.id}'>Take part!</button>`;
-
-                    eventsBox.appendChild(eventNode);
+                    infoWindow.open(map, marker);
                 });
+        });
 
-                setTimeout(setListeners, 2000);
-            }
-        );
+        let eventNode = document.createElement('div');
+        eventNode.className = 'event';
+        eventNode.innerHTML = `<div class="event-info-bar">
+                    <h3 class="event-title">${x[1]}</h3>
+                    <span class="event-description">${x[4]}</span>
+                </div>
+                <button class="btn btn-danger take-part" data-id='${x[0]}'>Take part!</button>`;
+
+        eventsBox.appendChild(eventNode);
+    });
+
+    setTimeout(setListeners, 2000);
 }
 
 function setListeners() {
@@ -135,8 +136,7 @@ function setListeners() {
                     event_id: eventId
                 })
             })
-                .then(response => response.json())
-                .then(response => console.log(response));
+                .then(response => response.json());
 
             event.preventDefault();
         });
