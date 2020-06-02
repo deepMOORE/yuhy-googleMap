@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="icons/favicon.svg">
+    <title>Login</title>
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/sign-in/">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link href="../styles/style.css" rel="stylesheet">
+</head>
+
+<body class="text-center">
+<form class="form-signin" onsubmit="this.postForm()">
+    <img class="mb-4" src="../icons/favicon.svg" alt="" width="72" height="72">
+    <h1 class="h3 mb-3 font-weight-normal">
+        Registration
+    </h1>
+
+    <input type="email" name="email" id="email" class="form-control" placeholder="Email address" required autofocus>
+
+    <input type="text" name="username" id="username" class="form-control" placeholder="Username" required>
+
+    <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
+    <button class="btn btn-lg btn-primary btn-block login-button" type="submit">
+        Sign up
+    </button>
+    <div class="on-success-login">
+        You just registered! <a href="http://localhost:3000">Sign in now</a>
+    </div>
+    <div class="on-fail-login">
+        User with this email already registered!
+    </div>
+    <div class="register-question-box"><h1 class="h6 mb-3 font-weight-normal register-question">
+        Have an account? <a href="http://localhost:3000">Sign in</a>
+    </h1>
+    </div>
+    <!--    <p class="mt-5 mb-3 text-muted">YUHY&copy; 2020</p>-->
+</form>
+</body>
+<script>
+    const registerUrl = 'http://127.0.0.1:8000/user/register/';
+    const successLogin = document.querySelector('.on-success-login');
+    const failLogin = document.querySelector('.on-fail-login');
+    successLogin.style.display = 'none';
+    failLogin.style.display = 'none';
+
+    document.querySelector('.login-button').addEventListener('click', function (event) {
+        event.preventDefault();
+
+        postForm();
+    });
+
+
+    function postForm() {
+        let email = document.querySelector('#email').value;
+        let username = document.querySelector('#username').value;
+        let password = document.querySelector('#password').value;
+
+        fetch(registerUrl, {
+            accept: 'application/json',
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: email,
+                password: password,
+                username: username,
+            }),
+        })
+            .then(response => response.json())
+            .then(response => {
+                successLogin.style.display = 'none';
+                failLogin.style.display = 'none';
+                if (response['status'] === 'success') {
+                    successLogin.style.display = 'block';
+                } else {
+                    failLogin.style.display = 'block';
+                }
+            })
+    }
+</script>
+</html>
