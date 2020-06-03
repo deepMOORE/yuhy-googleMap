@@ -18,6 +18,38 @@ function initMap() {
         }
     });
 
+    google.maps.event.addListener(map, 'click', function(event) {
+        placeMarker(event.latLng);
+    });
+
+    function placeMarker(coordinates) {
+        fetch(`${serverUrl}/events/create-event/`, {
+            accept: 'application/json',
+            method: 'POST',
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `JWT ${accessToken}`
+            },
+            body: JSON.stringify({
+                name: 'AfterClickEvent',
+                description: 'EventDesc',
+                event_date: new Date(),
+                latitude: coordinates.lat().toPrecision(7),
+                longitude: coordinates.lng().toPrecision(7),
+            }),
+        })
+            .then(
+                () => location.reload()
+            );
+
+        let marker = new google.maps.Marker({
+            position: coordinates,
+            map: map
+        });
+    }
+
     document.querySelector('.add-event-button').addEventListener('click', function (x) {
         x.preventDefault();
         fetch(`${serverUrl}/events/create-event/`, {
