@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Comments</title>
+    <link rel="stylesheet" href="../styles/welcome.css">
+    <script src="https://kit.fontawesome.com/f64cdc1941.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="wrapper comment-wrapper">
+    <button type="button" class="btn btn-danger back-arrow"><i class="fas fa-arrow-left"></i></button>
+    <h1>Comments to <span class="event-name">EventName</span></h1>
+    <div class="comments">
+        <div class="comment">
+            <h3 class="user-name">User1</h3>
+            <div class="text">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci autem, consequuntur expedita, illum
+                laboriosam magnam mollitia nesciunt quas quos repellendus rerum sed sint tempore ut.
+            </div>
+            <div class="actions">
+                <span class="like"><i class="fas fa-thumbs-up"></i></span>
+                <span class="dislike"><i class="fas fa-thumbs-down"></i></span>
+            </div>
+        </div>
+        <div class="comment">
+            <h3 class="user-name">User2</h3>
+            <div class="text">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam eos, illo in odit officia quo
+                reiciendis reprehenderit sapiente tempore voluptatem.
+            </div>
+            <div class="actions">
+                <span class="like"><i class="fas fa-thumbs-up"></i></span>
+                <span class="dislike"><i class="fas fa-thumbs-down"></i></span>
+            </div>
+        </div>
+        <div class="comment">
+            <h3 class="user-name">User3</h3>
+            <div class="text">
+                Lorem ipsum dolor sit.
+            </div>
+            <div class="actions">
+                <span class="like"><i class="fas fa-thumbs-up"></i></span>
+                <span class="dislike"><i class="fas fa-thumbs-down"></i></span>
+            </div>
+        </div>
+        <div class="comment">
+            <h3 class="user-name">User4</h3>
+            <div class="text">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem corporis deserunt earum error eveniet
+                expedita fugiat fugit ipsa modi natus nulla officiis quaerat quia repellat similique, sunt veritatis
+                voluptatem voluptatum.
+            </div>
+            <div class="actions">
+                <span class="like"><i class="fas fa-thumbs-up"></i></span>
+                <span class="dislike"><i class="fas fa-thumbs-down"></i></span>
+            </div>
+        </div>
+    </div>
+    <div class="create-comment">
+        <span>Show your emotions!</span>
+        <textarea class="create-filed"></textarea>
+        <button type="button" class="btn btn-primary add-comment">Enter</button>
+    </div>
+
+    <script>
+        const serverUrl = 'http://127.0.0.1:8000';
+        let eventName = document.querySelector('.event-name').textContent = localStorage.getItem('event_name');
+
+        document.querySelector('.back-arrow').addEventListener('click', e => {
+            e.preventDefault();
+
+            location.href = document.referrer;
+        })
+
+        document.querySelector('.add-comment').addEventListener('click', e => {
+            e.preventDefault();
+
+            let text = document.querySelector('.create-filed').value;
+            let user = localStorage.getItem('user_id');
+            let event =  localStorage.getItem('event_id');
+
+            fetch(`${serverUrl}/comments/create/`, {
+                accept: 'application/json',
+                method: 'POST',
+                cache: 'no-cache',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    text: document.querySelector('.create-filed').value,
+                    user: localStorage.getItem('user_id'),
+                    event: localStorage.getItem('event_id'),
+                }),
+            })
+                .then(
+                    // () => location.reload()
+                );
+        })
+    </script>
+</div>
+</body>
+</html>

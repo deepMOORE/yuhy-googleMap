@@ -33,7 +33,7 @@ function initMap() {
                 'Authorization': `JWT ${accessToken}`
             },
             body: JSON.stringify({
-                name: 'AfterClickEvent',
+                name: 'AfterClickEvent' + getRandomInt(55),
                 description: 'EventDesc',
                 event_date: new Date(),
                 latitude: coordinates.lat().toPrecision(7),
@@ -140,12 +140,18 @@ function fillEventsList(events, map) {
         let eventNode = document.createElement('div');
         eventNode.className = 'event';
         eventNode.innerHTML = `<div class="event-info-bar">
-                    <h3 class="event-title">${x[1]}</h3>
+                    <h3 class="event-title${x[0]}" style=":">${x[1]}</h3>
                     <span class="event-description">${x[4]}</span>
                 </div>
                 <button class="btn btn-danger take-part" data-id='${x[0]}'>Take part!</button>`;
 
         eventsBox.appendChild(eventNode);
+        document.querySelector(`.event-title` + x[0]).addEventListener('click', e => {
+            localStorage.setItem('event_id', x[0]);
+            localStorage.setItem('event_name', x[1]);
+
+            location.href = 'http://localhost:3000/views/comments.html'
+        })
     });
 
     setTimeout(setListeners, 2000);
@@ -176,7 +182,7 @@ function setListeners() {
 }
 
 function  fillPageByUserInfo(user) {
-    document.querySelector('.you-logged-as').innerHTML = 'You logged as ' + user.username;
+    document.querySelector('.you-logged-as').innerHTML = user.username;
 }
 
 function getRandomInt(max) {

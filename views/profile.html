@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+    <link rel="stylesheet" href="../styles/welcome.css">
+    <script src="https://kit.fontawesome.com/f64cdc1941.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/d3js/5.15.1/d3.min.js"></script>
+    <style>
+        .info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-info {
+            background-color: #dbdbdb;
+            border-radius: 12px;
+            padding: 7px;
+        }
+
+        .field {
+            width: 400px;
+            height: 100%;
+            background-color: antiquewhite;
+            border-radius: 5px;
+        }
+
+        .user-event {
+            display: flex;
+            align-items: center;
+            font-family: 'Quicksand', sans-serif;
+            background-color: #ececec;
+            margin: 4px 10px 19px 10px;
+            height: 60px;
+            border-radius: 20px;
+        }
+
+        div.delModal
+        {
+            display: flex;
+            flex-direction: column;
+            position:absolute;
+            border:solid 1px black;
+            padding:8px;
+            background-color: #ececec;
+            width:700px;
+        }
+
+        .popup-button {
+            border: 0;
+            background-color: #ececec;
+        }
+
+        .event-comment {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper comment-wrapper">
+    <div class="user-info">
+        <div class="field">
+            <h1>Username</h1>
+            <img class="profile-pic" alt="profile pic">
+            <div class="info">
+                <span><strong>First name:</strong> <span class="first-name">Pidoras</span></span>
+                <span><strong>Last name:</strong> <span class="last-name">Pidorasov</span></span>
+                <span><strong>Birth date:</strong> <span class="birth-date">17/06/1991</span></span>
+                <span><strong>Home city:</strong> <span class="city">Saransk</span></span>
+            </div>
+        </div>
+        <h2>Events</h2>
+        <div class="user-events">
+            <div class="user-event">
+                <input class="popup-button" type="button" value="EventName" onclick="showModal('delAll1')">
+                <div class="delModal" style="display:none" id="delAll1">
+                    <span class="event-comment">Lorem ipsum.</span>
+                    <span class="event-comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto distinctio dolore dolorem fugiat laborum minima, obcaecati officiis perspiciatis sint voluptates.</span>
+                    <span class="event-comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias, ullam!</span>
+                    <input type="button" value="Cancel" class="hide" onclick="hideModal('delAll1')"/>
+                </div>
+            </div>
+            <div class="user-event">
+                <input class="popup-button" type="button" value="EventName" onclick="showModal('delAll2')">
+                <div class="delModal" style="display:none" id="delAll2">
+                    <span class="event-comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias, ullam!</span>
+                    <span class="event-comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsam.</span>
+                    <input type="button" value="Cancel" class="hide" onclick="hideModal('delAll2')"/>
+                </div>
+            </div>
+            <div class="user-event">
+                <input class="popup-button" type ="button" value="EventName" onclick="showModal('delAll3')">
+                <div class="delModal" style="display:none" id="delAll3">
+                    <span class="event-comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias, ullam!</span>
+                    <input type="button" value="Cancel" class="hide" onclick="hideModal('delAll3')"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let serverUrl = `http://127.0.0.1:8000`;
+
+    document.querySelector('.profile-pic').src = getRandomPhoto();
+    function getRandomPhoto() {
+        return `https://picsum.photos/id/${getRandomInt(100)}/200/300`
+    }
+
+    function getRandomInt(max) {
+        return Math.floor(Math.random() * Math.floor(max));
+    }
+
+    function showModal(id) {
+        $('#'+id).fadeIn('slow');
+    }
+
+    function hideModal(id) {
+        $('#'+id).fadeOut('slow');
+    }
+
+    function main() {
+        fetch(`${serverUrl}/user/get-by-id/${localStorage.getItem('user_id')}`, {
+            accept: 'application/json',
+            method: 'GET',
+            cache: 'no-cache',
+            credentials: 'same-origin',
+        })
+            .then(response => response.json()).then(data => {
+                let eventBox = document.querySelector('.user-events');
+                localStorage.setItem('data', data['user']);
+                data['data'].user.map(x => {
+                    console.log(x);
+                })
+        })
+    }
+    main();
+</script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+</body>
+</html>

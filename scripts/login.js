@@ -21,6 +21,7 @@ loginButton.addEventListener('click', function (event) {
         .then(function (data) {
             if (data['status'] === 'success') {
                 document.cookie = 'access_token=' + data['data']['token'];
+                localStorage.setItem('user_id', data['data']['user_id']);
                 location.href = 'views/welcome.html?id=' + data['data']['user_id'];
             } else {
                 failWindow.style.display = 'block';
